@@ -1,5 +1,9 @@
 package com.pinyougou.sellergoods.service.impl;
 import java.util.List;
+
+import com.pinyougou.mapper.TbSpecificationOptionMapper;
+import com.pinyougou.pojo.TbSpecificationOption;
+import com.pinyougou.pojogroup.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
@@ -22,6 +26,9 @@ public class SpecificationServiceImpl implements SpecificationService {
 
 	@Autowired
 	private TbSpecificationMapper specificationMapper;
+
+	@Autowired
+	private TbSpecificationOptionMapper specificationOptionMapper;
 	
 	/**
 	 * 查询全部
@@ -41,13 +48,19 @@ public class SpecificationServiceImpl implements SpecificationService {
 		return new PageResult(page.getTotal(), page.getResult());
 	}
 
-	/**
+    /**
 	 * 增加
 	 */
 	@Override
-	public void add(TbSpecification specification) {
-		specificationMapper.insert(specification);		
-	}
+	public void add(Specification specification) {
+	    specificationMapper.insert(specification.getSpecification());
+
+        for (TbSpecificationOption specificationOption : specification.getSpecificationOptionList()) {
+                specificationOption.setSpecId(specification.getSpecification().getId());
+                specificationOptionMapper.insert(specificationOption);
+        }
+
+    }
 
 	
 	/**
@@ -96,5 +109,7 @@ public class SpecificationServiceImpl implements SpecificationService {
 		Page<TbSpecification> page= (Page<TbSpecification>)specificationMapper.selectByExample(example);		
 		return new PageResult(page.getTotal(), page.getResult());
 	}
-	
+
+
+
 }

@@ -37,13 +37,16 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 		if($scope.entity.id!=null){//如果有ID
 			serviceObject=itemCatService.update( $scope.entity ); //修改  
 		}else{
+
+			$scope.entity.parentId=$scope.parentId;//赋予上级id
+
 			serviceObject=itemCatService.add( $scope.entity  );//增加 
 		}				
 		serviceObject.success(
 			function(response){
 				if(response.success){
 					//重新查询 
-		        	$scope.reloadList();//重新加载
+		        	$scope.findByParentId($scope.parentId);//重新加载
 				}else{
 					alert(response.message);
 				}
@@ -76,5 +79,53 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 			}			
 		);
 	}
+
+	//根据id查找列表
+
+    //用来储存上级Id
+    $scope.parentId=0;
+
+    //根据上级Id显示下级列表
+	$scope.findByParentId=function (parentId) {
+
+		$scope.parentId=parentId;//记住上级的id
+
+		itemCatService.findByParentId(parentId).success(
+			function (response) {
+				$scope.list=response;
+            }
+		)
+    };
+
+    $scope.grade=1;
+
+	$scope.setGrade=function (value) {
+		$scope.grade=value;
+    };
+
+    //读取列表
+	$scope.selectList=function (p_entity) {
+
+        if($scope.grade==1){
+            $scope.entity_1=null;
+            $scope.entity_2=null;
+        }
+
+        if($scope.grade==2){
+            $scope.entity_1=p_entity;
+            $scope.entity_2=null;
+		}
+
+		if($scope.grade==3){
+            $scope.entity_2=p_entity;
+		}
+
+		$scope.findByParentId(p_entity.id);
+    }
+
+
+
+
+
     
 });	

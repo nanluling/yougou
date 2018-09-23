@@ -3,12 +3,15 @@ package com.pinyougou.shop.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.pojo.TbGoods;
 import com.pinyougou.sellergoods.service.GoodsService;
+import entity.Goods;
 import entity.PageResult;
 import entity.Result;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.lang.model.element.NestingKind;
 import java.util.List;
 
 /**
@@ -48,7 +51,10 @@ public class GoodsController {
 	 * @return
 	 */
 	@RequestMapping("/add")
-	public Result add(@RequestBody TbGoods goods){
+	public Result add(@RequestBody Goods goods){
+		//获取登录名
+		String sellerId= SecurityContextHolder.getContext().getAuthentication().getName();
+		goods.getGoods().setSellerId(sellerId);
 		try {
 			goodsService.add(goods);
 			return new Result(true, "增加成功");
@@ -64,7 +70,17 @@ public class GoodsController {
 	 * @return
 	 */
 	@RequestMapping("/update")
-	public Result update(@RequestBody TbGoods goods){
+	public Result update(@RequestBody Goods goods){
+
+		Goods goods1 = goodsService.findOne(goods.getGoods().getId());
+
+		//获取当前登陆的商家id
+		String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		//判断是否相同判断其是不是非法操作
+		if(!goods1.getGoods().getSellerId().equals(sellerId) || !goods.getGoods().getSellerId().equals(sellerId)){
+			System.out.println("操作非法");
+		}
 		try {
 			goodsService.update(goods);
 			return new Result(true, "修改成功");
@@ -80,7 +96,7 @@ public class GoodsController {
 	 * @return
 	 */
 	@RequestMapping("/findOne")
-	public TbGoods findOne(Long id){
+	public Goods findOne(Long id){
 		return goodsService.findOne(id);		
 	}
 	
@@ -109,7 +125,29 @@ public class GoodsController {
 	 */
 	@RequestMapping("/search")
 	public PageResult search(@RequestBody TbGoods goods, int page, int rows  ){
+		//获取页面上商家的Id
+		String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		goods.setSellerId(sellerId);
+
+
 		return goodsService.findPage(goods, page, rows);		
 	}
-	
+
+    //更新状态
+
+    @RequestMapping("/updateStatus")
+    public Result updateStatus(Long[] ids , String status){
+        try {
+            goodsService.updateStatus(ids, status);
+
+            return new Result(true,"更新成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return new Result(false,"更新失败");
+        }
+
+    }
+
 }

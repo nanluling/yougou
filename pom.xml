@@ -282,5 +282,7 @@
 		<module>pinyougou-sellergoods-service</module>
 		<module>pinyougou-manager-web</module>
 		<module>pinyougou-shop-web</module>
+        <module>pinyougou_content_interface</module>
+		<module>pinyougou_content_service</module>
 	</modules>
 </project>

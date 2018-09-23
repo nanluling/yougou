@@ -24,9 +24,14 @@ app.service('itemCatService',function($http){
 	//删除
 	this.dele=function(ids){
 		return $http.get('../itemCat/delete.do?ids='+ids);
-	}
+	};
 	//搜索
 	this.search=function(page,rows,searchEntity){
 		return $http.post('../itemCat/search.do?page='+page+"&rows="+rows, searchEntity);
-	}    	
+	};
+	//根据id查询下级列表
+	this.findByParentId=function (parentId) {
+
+		return $http.get('../itemCat/findByParentId.do?parentId='+parentId);
+    }
 });

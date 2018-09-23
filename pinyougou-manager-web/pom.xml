@@ -79,12 +79,18 @@
 		<scope>provided</scope>
 	</dependency>
 
+	   <dependency>
+		   <groupId>com.pinyougou</groupId>
+		   <artifactId>pinyougou_content_interface</artifactId>
+		   <version>0.0.5-SNAPSHOT</version>
+	   </dependency>
 
 	<dependency>
 		<groupId>com.pinyougou</groupId>
 		<artifactId>pinyougou-sellergoods-interface</artifactId>
 		<version>0.0.5-SNAPSHOT</version>
 	</dependency>
+
 
 
 	   <!-- 身份验证 -->
@@ -95,6 +101,11 @@
 	   <dependency>
 		   <groupId>org.springframework.security</groupId>
 		   <artifactId>spring-security-config</artifactId>
+	   </dependency>
+	   <dependency>
+		   <groupId>com.pinyougou</groupId>
+		   <artifactId>pinyougou-common</artifactId>
+		   <version>0.0.5-SNAPSHOT</version>
 	   </dependency>
 
    </dependencies>

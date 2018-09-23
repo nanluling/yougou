@@ -1,16 +1,22 @@
 package com.pinyougou.sellergoods.service.impl;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.pinyougou.mapper.TbSpecificationOptionMapper;
 import com.pinyougou.mapper.TbTypeTemplateMapper;
+import com.pinyougou.pojo.TbSpecificationOption;
+import com.pinyougou.pojo.TbSpecificationOptionExample;
 import com.pinyougou.pojo.TbTypeTemplate;
 import com.pinyougou.pojo.TbTypeTemplateExample;
 import com.pinyougou.pojo.TbTypeTemplateExample.Criteria;
 import com.pinyougou.sellergoods.service.TypeTemplateService;
-
 import entity.PageResult;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 服务实现层
@@ -22,6 +28,10 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 
 	@Autowired
 	private TbTypeTemplateMapper typeTemplateMapper;
+
+
+	@Autowired
+	private TbSpecificationOptionMapper specificationOptionMapper;
 	
 	/**
 	 * 查询全部
@@ -105,5 +115,34 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 		Page<TbTypeTemplate> page= (Page<TbTypeTemplate>)typeTemplateMapper.selectByExample(example);		
 		return new PageResult(page.getTotal(), page.getResult());
 	}
-	
+
+	@Override
+	public List<Map> findSpecList(Long id) {
+
+
+		//查询规格模板
+
+		TbTypeTemplate tbTypeTemplate = typeTemplateMapper.selectByPrimaryKey(id);
+
+
+		List<Map> list = JSON.parseArray(tbTypeTemplate.getSpecIds(),Map.class);
+
+		for (Map map : list) {
+			//查询规格选项表
+			TbSpecificationOptionExample example = new TbSpecificationOptionExample();
+
+			com.pinyougou.pojo.TbSpecificationOptionExample.Criteria criteria= example.createCriteria();
+                 Integer i = (Integer) map.get("id");
+
+			criteria.andSpecIdEqualTo( new Long((Integer)map.get("id")));
+
+			List<TbSpecificationOption> options = specificationOptionMapper.selectByExample(example);
+
+			map.put("options",options);
+
+
+		}
+		return list;
+	}
+
 }

@@ -14,6 +14,7 @@ import com.pinyougou.pojo.TbTypeTemplateExample.Criteria;
 import com.pinyougou.sellergoods.service.TypeTemplateService;
 import entity.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -87,16 +88,16 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 			typeTemplateMapper.deleteByPrimaryKey(id);
 		}		
 	}
-	
-	
+
+
 		@Override
 	public PageResult findPage(TbTypeTemplate typeTemplate, int pageNum, int pageSize) {
 		PageHelper.startPage(pageNum, pageSize);
-		
+
 		TbTypeTemplateExample example=new TbTypeTemplateExample();
 		Criteria criteria = example.createCriteria();
-		
-		if(typeTemplate!=null){			
+
+		if(typeTemplate!=null){
 						if(typeTemplate.getName()!=null && typeTemplate.getName().length()>0){
 				criteria.andNameLike("%"+typeTemplate.getName()+"%");
 			}
@@ -109,12 +110,39 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 			if(typeTemplate.getCustomAttributeItems()!=null && typeTemplate.getCustomAttributeItems().length()>0){
 				criteria.andCustomAttributeItemsLike("%"+typeTemplate.getCustomAttributeItems()+"%");
 			}
-	
+
 		}
-		
-		Page<TbTypeTemplate> page= (Page<TbTypeTemplate>)typeTemplateMapper.selectByExample(example);		
+
+		Page<TbTypeTemplate> page= (Page<TbTypeTemplate>)typeTemplateMapper.selectByExample(example);
+
+		saveToRedis();
+
 		return new PageResult(page.getTotal(), page.getResult());
 	}
+
+
+
+	@Autowired
+	private RedisTemplate redisTemplate;
+
+
+
+	//获取品牌列表和规格列表放入缓存
+	private void saveToRedis(){
+		List<TbTypeTemplate> templateList = findAll();
+
+		for (TbTypeTemplate template : templateList) {
+			//因为brandId品牌是一个json字符串所以把它转为map集合
+			List<Map> brandList = JSON.parseArray(template.getBrandIds(), Map.class);
+			redisTemplate.boundHashOps("brandList").put(template.getId(),brandList);
+			//规格
+			List<Map> specList = findSpecList(template.getId());
+			redisTemplate.boundHashOps("specList").put(template.getId(),specList);
+		}
+		System.out.println("缓存品牌列表");
+	}
+
+
 
 	@Override
 	public List<Map> findSpecList(Long id) {

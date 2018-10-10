@@ -1,5 +1,5 @@
  //控制层 
-app.controller('contentController' ,function($scope,$controller ,contentService,contentCategoryService){
+app.controller('contentController' ,function($scope,$controller ,contentService,contentCategoryService,uploadService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 	
@@ -107,4 +107,7 @@ app.controller('contentController' ,function($scope,$controller ,contentService,
             }
 		)
     }
+
+
+    $scope.status=["无效","有效"];
 });	

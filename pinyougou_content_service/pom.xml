@@ -96,6 +96,13 @@
             <artifactId>pinyougou_content_interface</artifactId>
             <version>0.0.5-SNAPSHOT</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>com.pinyougou</groupId>
+            <artifactId>pinyougou-common</artifactId>
+            <version>0.0.5-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 
@@ -110,8 +117,11 @@
                     <port>9002</port>
                     <!-- 请求路径 -->
                     <path>/</path>
+                    <uriEncoding>UTF-8</uriEncoding>
+                    <charset>UTF-8</charset>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 </project>

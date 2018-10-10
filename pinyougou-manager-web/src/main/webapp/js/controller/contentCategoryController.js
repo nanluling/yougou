@@ -8,6 +8,8 @@ app.controller('contentCategoryController' ,function($scope,$controller  ,conten
 		contentCategoryService.findAll().success(
 			function(response){
 				$scope.list=response;
+
+				alert(list);
 			}			
 		);
 	}    
@@ -76,5 +78,5 @@ app.controller('contentCategoryController' ,function($scope,$controller  ,conten
 			}			
 		);
 	}
-    
+
 });	
